@@ -40,6 +40,8 @@
                     @livewire('profile.delete-user-form')
                 </div>
             @endif
+
+            <a href="{{route('export.user-data')}}" class="button" target="_blank">Download my Export</a>
         </div>
     </div>
 </x-app-layout>

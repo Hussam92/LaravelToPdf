@@ -45,4 +45,6 @@ Route::get('/billing-portal', function (Request $request) {
     return $request->user()->redirectToBillingPortal();
 });
 
-Route::get('/export', [UserDataExportController::class, 'createExport']);
+Route::get('/user/profile/export', [UserDataExportController::class, 'createExport'])
+    ->middleware('auth')
+    ->name('export.user-data');
