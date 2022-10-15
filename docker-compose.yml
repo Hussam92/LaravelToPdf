@@ -1,0 +1,68 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: sammy
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: laravelpdf
+    container_name: laravelpdf-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravelpdf
+
+  db:
+    image: mysql:5.7.32
+    container_name: laravelpdf-db
+    restart: unless-stopped
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker/mysql:/docker-entrypoint-initdb.d
+      - ${MYSQL_DATA_DIR-./storage/data/mysql}:/var/lib/mysql
+      - ${MYSQL_LOG_DIR-./storage/logs/mysql}:/var/log/mysql
+    networks:
+      - laravelpdf
+
+  nginx:
+    image: nginx:alpine
+    container_name: laravelpdf-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d/
+    networks:
+      - laravelpdf
+  redis:
+    image: redis:latest
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./docker/redis:/data
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - laravelpdf
+    healthcheck:
+      test: [ "CMD","redis-cli","ping" ]
+      interval: 600s
+      timeout: 10s
+      retries: 5
+
+networks:
+  laravelpdf:
+    driver: bridge
