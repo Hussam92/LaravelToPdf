@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserDataExportController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -43,3 +44,5 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::get('/billing-portal', function (Request $request) {
     return $request->user()->redirectToBillingPortal();
 });
+
+Route::get('/export', [UserDataExportController::class, 'createExport']);
