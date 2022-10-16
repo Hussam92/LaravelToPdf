@@ -41,7 +41,11 @@
                 </div>
             @endif
 
-            <a href="{{route('export.user-data')}}" class="button" target="_blank">Download my Export</a>
+            <x-jet-section-border />
+
+            <div class="mt-10 sm:mt-0">
+                @include('profile.export-user-form')
+            </div>
         </div>
     </div>
 </x-app-layout>
